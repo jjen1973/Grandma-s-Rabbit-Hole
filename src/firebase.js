@@ -3,12 +3,12 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyD6_uRvv6b4KkT-LrIyaVGm_wzceBO4CV4',
-  authDomain: 'toddler-coloring-book-1973.firebaseapp.com',
-  projectId: 'toddler-coloring-book-1973',
-  storageBucket: 'toddler-coloring-book-1973.firebasestorage.app',
-  messagingSenderId: '1015293476578',
-  appId: '1:1015293476578:web:980f98e7aecdb2b4b7a8bb',
+  apiKey: 'AIzaSyCwMSlX_65PucPyH_KHdTQss95_GDKipl4',
+  authDomain: 'grandmas-rabbit-hole.firebaseapp.com',
+  projectId: 'grandmas-rabbit-hole',
+  storageBucket: 'grandmas-rabbit-hole.firebasestorage.app',
+  messagingSenderId: '407680624515',
+  appId: '1:407680624515:web:f2ecef8f2b7c02344778b6',
 };
 
 const app = initializeApp(firebaseConfig);
