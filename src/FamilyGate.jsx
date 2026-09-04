@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { createUserWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { addDoc, collection, doc, onSnapshot, orderBy, query, runTransaction, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from './firebase';
 
@@ -9,6 +9,7 @@ const errorMessage = (error) => ({
   'auth/invalid-email': 'Please enter a valid email address.',
   'auth/weak-password': 'Use a password with at least 6 characters.',
   'auth/operation-not-allowed': 'Email/password login is not enabled in Firebase.',
+  'auth/too-many-requests': 'Too many attempts. Please wait a little while and try again.',
   'permission-denied': 'The Firestore security rules have not been published yet.',
 }[error?.code] || error?.message || 'Something went wrong. Please try again.');
 
@@ -60,6 +61,8 @@ export default function FamilyGate({ children }) {
   const [childName, setChildName] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
+  const [rewardError, setRewardError] = useState('');
   const [copiedDeveloperId, setCopiedDeveloperId] = useState('');
 
   useEffect(() => onAuthStateChanged(auth, (nextUser) => {
@@ -113,9 +116,36 @@ export default function FamilyGate({ children }) {
     event.preventDefault();
     setBusy(true);
     setError('');
+    setNotice('');
     try {
       if (registering) await createUserWithEmailAndPassword(auth, email.trim(), password);
       else await signInWithEmailAndPassword(auth, email.trim(), password);
+    } catch (nextError) {
+      setError(errorMessage(nextError));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const reportRewardError = (activity, nextError) => {
+    const code = nextError?.code ? ` (${nextError.code})` : '';
+    const message = `${activity} reward could not be saved: ${errorMessage(nextError)}${code}`;
+    console.error(message, nextError);
+    setRewardError(message);
+  };
+
+  const resetPassword = async () => {
+    const parentEmail = email.trim();
+    setError('');
+    setNotice('');
+    if (!parentEmail) {
+      setError('Enter your parent email first, then tap Forgot password?');
+      return;
+    }
+    setBusy(true);
+    try {
+      await sendPasswordResetEmail(auth, parentEmail);
+      setNotice(`Password reset instructions were sent to ${parentEmail}. Check your inbox and spam folder.`);
     } catch (nextError) {
       setError(errorMessage(nextError));
     } finally {
@@ -158,56 +188,60 @@ export default function FamilyGate({ children }) {
   const awardColoringPage = async (letter) => {
     if (!user || !selected || !letter) return;
     const childReference = doc(db, 'parents', user.uid, 'children', selected.id);
-    await runTransaction(db, async (transaction) => {
-      const snapshot = await transaction.get(childReference);
-      if (!snapshot.exists()) return;
-      const data = snapshot.data();
-      const rewarded = Array.isArray(data.coloringRewards) ? data.coloringRewards : [];
-      if (rewarded.includes(letter)) return;
-      const nextRewards = [...rewarded, letter];
-      const completedBook = nextRewards.length >= 26 && !data.coloringBookGoldAwarded;
-      const carrotsBefore = data.carrots || 0;
-      const carrotsAfter = carrotsBefore + 1;
-      const goldCarrotsBefore = data.goldCarrots || 0;
-      const goldCarrotsAfter = goldCarrotsBefore + (completedBook ? 1 : 0);
-      transaction.update(childReference, {
-        ...currencyTrackingInitialization(data),
-        coloringRewards: nextRewards,
-        carrots: carrotsAfter,
-        trackedCarrotsEarned: (data.trackedCarrotsEarned || 0) + 1,
-        ...(completedBook ? {
-          goldCarrots: goldCarrotsAfter,
-          trackedGoldCarrotsEarned: (data.trackedGoldCarrotsEarned || 0) + 1,
-          coloringBookGoldAwarded: true,
-        } : {}),
-      });
-      writeCurrencyTransaction(transaction, childReference, {
-        type: 'earn',
-        currency: 'carrots',
-        amount: 1,
-        reason: 'coloring-page',
-        balanceBefore: carrotsBefore,
-        balanceAfter: carrotsAfter,
-      });
-      if (completedBook) {
+    setRewardError('');
+    try {
+      await runTransaction(db, async (transaction) => {
+        const snapshot = await transaction.get(childReference);
+        if (!snapshot.exists()) throw new Error('The selected child profile was not found in Firestore.');
+        const data = snapshot.data();
+        const rewarded = Array.isArray(data.coloringRewards) ? data.coloringRewards : [];
+        if (rewarded.includes(letter)) return;
+        const nextRewards = [...rewarded, letter];
+        const completedBook = nextRewards.length >= 26 && !data.coloringBookGoldAwarded;
+        const carrotsBefore = data.carrots || 0;
+        const carrotsAfter = carrotsBefore + 1;
+        const goldCarrotsBefore = data.goldCarrots || 0;
+        const goldCarrotsAfter = goldCarrotsBefore + (completedBook ? 1 : 0);
+        transaction.update(childReference, {
+          ...currencyTrackingInitialization(data),
+          coloringRewards: nextRewards,
+          carrots: carrotsAfter,
+          trackedCarrotsEarned: (data.trackedCarrotsEarned || 0) + 1,
+          ...(completedBook ? {
+            goldCarrots: goldCarrotsAfter,
+            trackedGoldCarrotsEarned: (data.trackedGoldCarrotsEarned || 0) + 1,
+            coloringBookGoldAwarded: true,
+          } : {}),
+        });
         writeCurrencyTransaction(transaction, childReference, {
           type: 'earn',
-          currency: 'goldCarrots',
+          currency: 'carrots',
           amount: 1,
-          reason: 'coloring-book-complete',
-          balanceBefore: goldCarrotsBefore,
-          balanceAfter: goldCarrotsAfter,
+          reason: 'coloring-page',
+          balanceBefore: carrotsBefore,
+          balanceAfter: carrotsAfter,
         });
-      }
-    });
+        if (completedBook) {
+          writeCurrencyTransaction(transaction, childReference, {
+            type: 'earn', currency: 'goldCarrots', amount: 1, reason: 'coloring-book-complete',
+            balanceBefore: goldCarrotsBefore, balanceAfter: goldCarrotsAfter,
+          });
+        }
+      });
+    } catch (nextError) {
+      reportRewardError(`Letter ${letter}`, nextError);
+      throw nextError;
+    }
   };
 
   const awardMemoryLevel = async (level, maxLevel) => {
     if (!user || !selected || !level) return;
     const childReference = doc(db, 'parents', user.uid, 'children', selected.id);
-    await runTransaction(db, async (transaction) => {
+    setRewardError('');
+    try {
+      await runTransaction(db, async (transaction) => {
       const snapshot = await transaction.get(childReference);
-      if (!snapshot.exists()) return;
+      if (!snapshot.exists()) throw new Error('The selected child profile was not found in Firestore.');
       const data = snapshot.data();
       const completed = Array.isArray(data.memoryCompletedLevels) ? data.memoryCompletedLevels : [];
       if (completed.includes(level)) return;
@@ -245,7 +279,11 @@ export default function FamilyGate({ children }) {
           balanceAfter: goldCarrotsAfter,
         });
       }
-    });
+      });
+    } catch (nextError) {
+      reportRewardError(`Memory level ${level}`, nextError);
+      throw nextError;
+    }
   };
 
   const purchaseItem = async (itemId, carrotCost = 0, goldCost = 0) => {
@@ -332,9 +370,15 @@ export default function FamilyGate({ children }) {
           <label>Parent email<input type='email' value={email} onChange={(event) => setEmail(event.target.value)} autoComplete='email' required /></label>
           <label>Password<input type='password' value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={registering ? 'new-password' : 'current-password'} minLength='6' required /></label>
           {error ? <p className='family-error' role='alert'>{error}</p> : null}
+          {notice ? <p className='family-success' role='status'>{notice}</p> : null}
           <button disabled={busy}>{busy ? 'Please wait...' : registering ? 'Create parent account' : 'Sign in'}</button>
         </form>
-        <button className='family-link' type='button' onClick={() => { setRegistering(!registering); setError(''); }}>
+        {!registering ? (
+          <button className='family-link family-link-secondary' type='button' disabled={busy} onClick={resetPassword}>
+            Forgot password?
+          </button>
+        ) : null}
+        <button className='family-link' type='button' onClick={() => { setRegistering(!registering); setError(''); setNotice(''); }}>
           {registering ? 'Already registered? Sign in' : 'New family? Create a parent account'}
         </button>
       </section>
@@ -400,6 +444,12 @@ export default function FamilyGate({ children }) {
         <button type='button' onClick={() => { localStorage.removeItem('selectedChild:' + user.uid); setSelected(null); }}>Switch child</button>
         <button type='button' onClick={() => signOut(auth)}>Sign out</button>
       </aside>
+      {rewardError ? (
+        <div className='reward-error-banner' role='alert'>
+          <span>{rewardError}</span>
+          <button type='button' aria-label='Dismiss reward error' onClick={() => setRewardError('')}>×</button>
+        </div>
+      ) : null}
       {React.cloneElement(children, {
         family: { user, child: selected, awardColoringPage, awardMemoryLevel, purchaseItem, awardBallReadyCompletion },
       })}
