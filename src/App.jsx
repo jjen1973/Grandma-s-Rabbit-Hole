@@ -497,13 +497,15 @@ function ColoringBook({ onExit, family }) {
 
 function StartPage({ onEnterTunnel }) {
   const [rabbitStage, setRabbitStage] = useState('waiting');
-  const [reaction, setReaction] = useState(null);
-  const reactionTimeoutRef = useRef(null);
+  const [reactions, setReactions] = useState({ grandma: false, macaw: false, tree: false });
+  const reactionTimeoutRefs = useRef({});
   const macawAudioRef = useRef(null);
   const grandmaVoicesRef = useRef([]);
   const grandmaUtteranceRef = useRef(null);
 
-  useEffect(() => () => window.clearTimeout(reactionTimeoutRef.current), []);
+  useEffect(() => () => {
+    Object.values(reactionTimeoutRefs.current).forEach((timeoutId) => window.clearTimeout(timeoutId));
+  }, []);
 
   useEffect(() => {
     const macawAudio = new Audio('/audio/cracker-macaw.m4a');
@@ -531,9 +533,11 @@ function StartPage({ onEnterTunnel }) {
   }, []);
 
   const showReaction = (name) => {
-    window.clearTimeout(reactionTimeoutRef.current);
-    setReaction(name);
-    reactionTimeoutRef.current = window.setTimeout(() => setReaction(null), 1500);
+    window.clearTimeout(reactionTimeoutRefs.current[name]);
+    setReactions((current) => ({ ...current, [name]: true }));
+    reactionTimeoutRefs.current[name] = window.setTimeout(() => {
+      setReactions((current) => ({ ...current, [name]: false }));
+    }, 1500);
   };
 
   const greetFromGrandma = () => {
@@ -636,44 +640,56 @@ function StartPage({ onEnterTunnel }) {
   return (
     <main className={`start-page ${rabbitStage === 'hopping' ? 'following' : ''} ${rabbitStage === 'at-hole' ? 'rabbit-at-hole' : ''}`}>
       <section className="start-scene" aria-label="Grandma, a macaw, and a rabbit beside a rabbit hole">
-        <img
-          className="start-scene-art"
-          src={rabbitStage === 'waiting'
-            ? '/pages/start-page/rabbit-hole-start-grandma-rest.png'
-            : '/pages/start-page/rabbit-hole-start-empty-hole.png'}
-          alt="Grandma standing beside a tree with a macaw, while a white rabbit waits beside its rabbit hole"
-        />
+        <picture className="start-scene-picture">
+          <source
+            media="(max-width: 600px) and (orientation: portrait)"
+            srcSet="/pages/start-page/portrait-character-free-background.png"
+          />
+          <img
+            className="start-scene-art"
+            src={rabbitStage === 'waiting'
+              ? '/pages/start-page/rabbit-hole-start-grandma-rest.png'
+              : '/pages/start-page/rabbit-hole-start-empty-hole.png'}
+            alt="Grandma standing beside a tree with Cracker the macaw, while a white rabbit waits beside its rabbit hole"
+          />
+        </picture>
+        {!reactions.grandma ? (
+          <img className="portrait-reaction-overlay grandma-portrait-rest portrait-scene-layer" src="/pages/start-page/grandma-portrait-rest-overlay.png" alt="" aria-hidden="true" />
+        ) : null}
+        {!reactions.macaw ? (
+          <img className="portrait-reaction-overlay cracker-portrait-rest portrait-scene-layer" src="/pages/start-page/cracker-portrait-rest-overlay.png" alt="" aria-hidden="true" />
+        ) : null}
+        {rabbitStage === 'waiting' ? (
+          <img className="portrait-reaction-overlay rabbit-portrait-rest portrait-scene-layer" src="/pages/start-page/rabbit-portrait-rest-overlay.png" alt="" aria-hidden="true" />
+        ) : null}
         {rabbitStage === 'hopping' ? (
-          <img
-            className="rabbit-runner"
-            src="/pages/start-page/rabbit-runner.png"
-            alt=""
-            aria-hidden="true"
-          />
+          <>
+            <img className="rabbit-runner desktop-scene-layer" src="/pages/start-page/rabbit-runner.png" alt="" aria-hidden="true" />
+            <img className="rabbit-runner portrait-rabbit-runner portrait-scene-layer" src="/pages/start-page/rabbit-portrait-run-overlay.png" alt="" aria-hidden="true" />
+          </>
         ) : null}
-        {reaction === 'grandma' ? (
-          <img
-            className="start-scene-art grandma-wave-scene"
-            src="/pages/start-page/rabbit-hole-start-grandma-wave.png"
-            alt=""
-            aria-hidden="true"
-          />
+        {reactions.grandma ? (
+          <>
+            <img className="start-scene-art grandma-wave-scene desktop-scene-layer" src="/pages/start-page/rabbit-hole-start-grandma-wave.png" alt="" aria-hidden="true" />
+            <img className="portrait-reaction-overlay grandma-portrait-wave portrait-scene-layer" src="/pages/start-page/grandma-portrait-wave-overlay.png" alt="" aria-hidden="true" />
+          </>
         ) : null}
-        {reaction === 'macaw' ? (
-          <img
-            className="start-scene-art macaw-fluff-scene"
-            src="/pages/start-page/rabbit-hole-start-macaw-fluff.png"
-            alt=""
-            aria-hidden="true"
-          />
+        {reactions.macaw ? (
+          <>
+            <img className="start-scene-art macaw-fluff-scene desktop-scene-layer" src="/pages/start-page/rabbit-hole-start-macaw-fluff.png" alt="" aria-hidden="true" />
+            <img className="portrait-reaction-overlay cracker-portrait-fluff portrait-scene-layer" src="/pages/start-page/cracker-portrait-fluff-overlay.png" alt="" aria-hidden="true" />
+          </>
         ) : null}
-        {reaction === 'tree' ? (
-          <img
-            className="start-scene-art tree-rustle-scene"
-            src="/pages/start-page/rabbit-hole-start-grandma-rest.png"
-            alt=""
-            aria-hidden="true"
-          />
+        {reactions.tree ? (
+          <>
+            <img className="start-scene-art tree-rustle-scene desktop-scene-layer" src="/pages/start-page/rabbit-hole-start-grandma-rest.png" alt="" aria-hidden="true" />
+            <img
+              className="start-scene-art tree-rustle-scene portrait-tree-rustle portrait-scene-layer"
+              src="/pages/start-page/portrait-character-free-background.png"
+              alt=""
+              aria-hidden="true"
+            />
+          </>
         ) : null}
         <button type="button" className="character-hotspot tree-leaves-hotspot" onClick={rustleTreeLeaves} aria-label="Tap the green leaves to make them rustle" />
         <button type="button" className="character-hotspot grandma-hotspot" onClick={greetFromGrandma} aria-label="Tap Grandma to hear her say hello" />
@@ -682,7 +698,6 @@ function StartPage({ onEnterTunnel }) {
           type="button"
           className="follow-hotspot rabbit-hotspot"
           onClick={() => {
-            setReaction(null);
             setRabbitStage('hopping');
           }}
           disabled={rabbitStage !== 'waiting'}
@@ -702,8 +717,8 @@ function StartPage({ onEnterTunnel }) {
         {rabbitStage !== 'waiting' ? (
           <div className="follow-rabbit-message" aria-live="polite">Follow the Rabbit!</div>
         ) : null}
-        {reaction === 'grandma' ? <div className="scene-reaction grandma-reaction">Hello!</div> : null}
-        {reaction === 'macaw' ? <div className="scene-reaction macaw-reaction">SQUAWK!</div> : null}
+        {reactions.grandma ? <div className="scene-reaction grandma-reaction">Hello!</div> : null}
+        {reactions.macaw ? <div className="scene-reaction macaw-reaction">SQUAWK!</div> : null}
       </section>
       {rabbitStage === 'descending' ? (
         <div className="rabbit-hole-fall" role="status" aria-label="Falling down the rabbit hole">

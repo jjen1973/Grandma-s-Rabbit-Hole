@@ -925,6 +925,14 @@ svg {
   user-select: none;
 }
 
+.start-scene-picture {
+  display: block;
+}
+
+.portrait-scene-layer {
+  display: none;
+}
+
 .grandma-wave-scene {
   position: absolute;
   z-index: 1;
@@ -3489,3 +3497,747 @@ svg {
 }
 .face-clean-badge { position: absolute; z-index: 3; left: 49%; top: 13%; padding: 8px 14px; border-radius: 999px; background: rgba(255,255,255,.94); color: #5e3a70; font-weight: 900; transform: translateX(-50%); animation: face-clean-pop .45s ease-out; }
 @keyframes face-clean-pop { from { opacity: 0; transform: translateX(-50%) scale(.6); } to { opacity: 1; transform: translateX(-50%) scale(1); } }
+
+/* Responsive Android layout. Desktop declarations above remain the baseline. */
+:root {
+  --mobile-edge: clamp(8px, 2.5vw, 24px);
+  --touch-target: 44px;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+button,
+input {
+  max-width: 100%;
+}
+
+@media (max-width: 1100px) {
+  .family-card h1 {
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    white-space: nowrap;
+  }
+
+  .family-toolbar {
+    top: max(6px, env(safe-area-inset-top));
+    right: max(6px, env(safe-area-inset-right));
+    left: max(6px, env(safe-area-inset-left));
+    width: auto;
+    max-width: none;
+    justify-content: center;
+    gap: clamp(4px, 1vw, 8px);
+    padding: clamp(5px, 1vw, 8px);
+    font-size: clamp(11px, 1.6vw, 13px);
+  }
+
+  .family-toolbar button,
+  .currency-pill {
+    min-height: var(--touch-target);
+  }
+
+  .start-page,
+  .memory-game-page,
+  .books-choice-page,
+  .story-book-page,
+  .ball-ready-page {
+    min-height: 100dvh;
+  }
+
+  .start-page {
+    align-content: start;
+    padding: calc(72px + env(safe-area-inset-top)) var(--mobile-edge) max(var(--mobile-edge), env(safe-area-inset-bottom));
+  }
+
+  .start-scene {
+    width: min(100%, 980px, calc((100dvh - 96px) * 1.25));
+    margin-inline: auto;
+  }
+
+  .page-shell {
+    width: 100%;
+    padding: calc(72px + env(safe-area-inset-top)) var(--mobile-edge) clamp(28px, 6vw, 56px);
+  }
+
+  .hero {
+    align-items: center;
+    text-align: center;
+  }
+
+  .hero-pill {
+    align-self: center;
+  }
+
+  .book-spread.single-page-book {
+    width: min(100%, 760px);
+    min-height: clamp(560px, 112vw, 800px);
+  }
+
+  .page-sheet.single,
+  .book-cover {
+    min-height: clamp(520px, 106vw, 760px);
+  }
+
+  .toolstrip {
+    padding: clamp(12px, 2.5vw, 20px);
+  }
+
+  .crayon-grid {
+    grid-template-columns: repeat(auto-fit, minmax(clamp(48px, 10vw, 72px), 1fr));
+    gap: clamp(8px, 1.8vw, 14px);
+  }
+
+  .crayon {
+    height: clamp(88px, 17vw, 124px);
+  }
+
+  .memory-game-page {
+    padding: calc(82px + env(safe-area-inset-top)) var(--mobile-edge) max(28px, env(safe-area-inset-bottom));
+  }
+
+  .memory-back-button {
+    top: calc(74px + env(safe-area-inset-top));
+    left: max(var(--mobile-edge), env(safe-area-inset-left));
+    min-height: var(--touch-target);
+  }
+
+  .memory-game-heading {
+    margin-top: clamp(46px, 7vw, 68px);
+  }
+
+  .memory-card-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: min(100%, 760px);
+    gap: clamp(7px, 2vw, 18px);
+  }
+
+  .rabbit-maze-progress {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: clamp(5px, 1.5vw, 12px);
+    width: min(100%, 760px);
+    padding: clamp(8px, 2vw, 18px);
+    border-width: clamp(3px, .7vw, 5px);
+    border-radius: clamp(18px, 4vw, 36px);
+  }
+
+  .rabbit-maze-progress button {
+    min-width: 0;
+    min-height: clamp(54px, 11vw, 78px);
+    border-width: clamp(2px, .6vw, 4px);
+    font-size: clamp(.62rem, 1.7vw, .9rem);
+  }
+
+  .rabbit-maze-progress button span {
+    font-size: clamp(1rem, 3vw, 1.65rem);
+  }
+
+  .tunnel-page {
+    min-height: 100dvh;
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+  }
+
+  .tunnel-guide-rabbit {
+    max-width: 12vw;
+  }
+
+  .ball-ready-page > img,
+  .ball-character-canvas {
+    max-height: none;
+    aspect-ratio: 4 / 3;
+  }
+
+  .ball-task-panel {
+    width: min(calc(100% - (2 * var(--mobile-edge))), 720px);
+    margin: var(--mobile-edge) auto max(24px, env(safe-area-inset-bottom));
+    padding: clamp(12px, 3vw, 20px);
+  }
+
+  .ready-stage .ball-task-panel {
+    position: relative;
+    inset: auto;
+    width: min(calc(100% - (2 * var(--mobile-edge))), 720px);
+    max-height: none;
+    margin: var(--mobile-edge) auto max(24px, env(safe-area-inset-bottom));
+    padding: clamp(12px, 3vw, 20px);
+    background: rgba(255, 250, 255, .94);
+  }
+
+  .ready-stage > .memory-back-button {
+    top: calc(74px + env(safe-area-inset-top));
+  }
+
+  .ball-ready-instruction {
+    width: min(36%, 300px);
+  }
+
+  .book-picture-choices,
+  .waffles-pip-book-choices {
+    width: min(100%, 1000px);
+    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  }
+
+  .tookie-reader,
+  .tookie-story-card {
+    width: min(100%, 1000px);
+  }
+}
+
+@media (max-width: 600px) {
+  :root {
+    --player-bar-space: 112px;
+  }
+
+  .family-toolbar {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 4px;
+    padding: 5px;
+    border-radius: 14px;
+  }
+
+  .family-player {
+    grid-column: 1 / -1;
+    overflow: hidden;
+    padding: 1px 4px;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .family-toolbar .currency-pill {
+    grid-column: span 2;
+    justify-content: center;
+    min-height: 30px;
+    padding-inline: 4px;
+    font-size: clamp(.75rem, 3.5vw, .9rem);
+  }
+
+  .family-toolbar button {
+    grid-column: span 3;
+    min-height: 34px;
+    padding: 5px 7px;
+    font-size: clamp(.68rem, 3vw, .8rem);
+  }
+
+  .reward-error-banner {
+    top: calc(var(--player-bar-space) + env(safe-area-inset-top));
+    width: calc(100% - (2 * var(--mobile-edge)));
+    padding: 10px 12px;
+    font-size: .8rem;
+  }
+
+  .start-page,
+  .page-shell,
+  .memory-game-page {
+    padding-top: calc(var(--player-bar-space) + env(safe-area-inset-top));
+  }
+
+  .start-scene {
+    width: 100%;
+    border-width: clamp(3px, 1.4vw, 6px);
+    border-radius: clamp(14px, 5vw, 24px);
+  }
+
+  .follow-rabbit-message {
+    min-width: min(88%, 360px);
+    border-width: 3px;
+    font-size: clamp(.9rem, 4.5vw, 1.35rem);
+  }
+
+  .hero {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .hero .hero-title {
+    font-size: clamp(2rem, 12vw, 3.25rem);
+    -webkit-text-stroke-width: 1px;
+  }
+
+  .hero-pill {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: .85rem;
+  }
+
+  .book-spread.single-page-book {
+    min-height: 0;
+    padding: clamp(8px, 2.5vw, 14px);
+    aspect-ratio: 4 / 5.4;
+    border-radius: 10px 20px 20px 10px;
+  }
+
+  .page-sheet.single,
+  .book-cover {
+    min-height: 0;
+    height: 100%;
+  }
+
+  .page-sheet {
+    padding: clamp(8px, 2.8vw, 14px);
+    border-radius: clamp(12px, 4vw, 20px);
+  }
+
+  .page-sheet__top {
+    margin-bottom: 6px;
+    font-size: clamp(.72rem, 3vw, .9rem);
+  }
+
+  .page-art {
+    padding: clamp(4px, 1.8vw, 9px);
+    border-radius: clamp(10px, 3vw, 16px);
+  }
+
+  .page-footer {
+    gap: 5px;
+    margin-top: 6px;
+  }
+
+  .page-footer button {
+    min-height: 34px;
+    padding: 5px 8px;
+    font-size: .65rem;
+  }
+
+  .page-complete-star {
+    top: 34px;
+    right: 18px;
+    width: clamp(34px, 11vw, 46px);
+    height: auto;
+    aspect-ratio: 1;
+    font-size: clamp(1.3rem, 7vw, 1.8rem);
+  }
+
+  .nav-button {
+    width: clamp(40px, 12vw, 48px);
+    height: auto;
+    aspect-ratio: 1;
+    font-size: clamp(1.55rem, 7vw, 2rem);
+  }
+
+  .nav-prev { left: 5px; }
+  .nav-next { right: 5px; }
+
+  .toolstrip__copy h2 {
+    font-size: clamp(1.2rem, 5vw, 1.5rem);
+  }
+
+  .crayon-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: 12px;
+    padding: 18px 0 4px;
+  }
+
+  .selected-color-box {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 12px;
+    padding: 9px 11px;
+    font-size: .82rem;
+  }
+
+  .memory-back-button,
+  .ready-stage > .memory-back-button {
+    position: relative;
+    top: auto;
+    left: auto;
+    display: inline-flex;
+    min-height: var(--touch-target);
+    align-items: center;
+    margin: 0 auto 12px;
+    padding: 8px 12px;
+  }
+
+  .memory-game-heading {
+    margin-top: 0;
+  }
+
+  .memory-card-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(5px, 1.8vw, 9px);
+    margin-block: 16px;
+  }
+
+  .memory-card {
+    border-radius: clamp(10px, 3vw, 16px);
+  }
+
+  .memory-card-back,
+  .memory-card-front {
+    border-width: clamp(3px, 1vw, 5px);
+    border-radius: clamp(10px, 3vw, 16px);
+  }
+
+  .memory-game-status {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .rabbit-maze-progress {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .rabbit-maze-progress button strong,
+  .rabbit-maze-progress button small {
+    font-size: clamp(.52rem, 2.6vw, .7rem);
+  }
+
+  .tunnel-page {
+    padding-top: calc(var(--player-bar-space) + env(safe-area-inset-top));
+    background-position: center var(--player-bar-space);
+  }
+
+  .deeper-tunnel-background {
+    top: var(--player-bar-space);
+  }
+
+  .tunnel-heading {
+    top: calc(var(--player-bar-space) + 4px);
+  }
+
+  .tunnel-home-button {
+    top: calc(var(--player-bar-space) + 5px);
+    min-height: var(--touch-target);
+  }
+
+  .activity-doors,
+  .deeper-door-locks,
+  .deeper-tunnels {
+    top: var(--player-bar-space);
+    bottom: auto;
+  }
+
+  .tunnel-guide-rabbit {
+    top: calc(var(--player-bar-space) + 45vw);
+  }
+
+  .tunnel-back-one-button {
+    min-height: var(--touch-target);
+  }
+
+  .ball-ready-page {
+    padding-top: calc(var(--player-bar-space) + env(safe-area-inset-top));
+    overflow-x: hidden;
+  }
+
+  .ball-ready-page > .memory-back-button {
+    margin-left: var(--mobile-edge);
+  }
+
+  .ball-dialogue {
+    width: min(90%, 480px);
+    padding: clamp(10px, 3vw, 18px);
+    border-width: 3px;
+    border-radius: clamp(16px, 5vw, 26px);
+  }
+
+  .ball-dialogue p {
+    margin-block: 6px;
+    font-size: clamp(.75rem, 3.4vw, 1rem);
+  }
+
+  .lily-adventure-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .ball-task-grid,
+  .ready-stage .ball-task-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ball-task-grid button,
+  .ready-stage .ball-task-grid button {
+    min-height: var(--touch-target);
+  }
+
+  .ball-ready-instruction {
+    top: calc(var(--player-bar-space) + 43vw);
+    width: 38%;
+  }
+
+  .family-gate {
+    align-items: start;
+    padding: max(16px, env(safe-area-inset-top)) var(--mobile-edge) max(20px, env(safe-area-inset-bottom));
+  }
+
+  .family-card {
+    padding: clamp(18px, 6vw, 28px);
+    border-width: 3px;
+    border-radius: clamp(18px, 6vw, 28px);
+  }
+
+  .family-card h1 {
+    font-size: clamp(2rem, 7vw, 2.8rem);
+    white-space: nowrap;
+  }
+
+  .child-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(130px, 100%), 1fr));
+  }
+
+  .developer-id-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+/* Short landscape phones and unfolded devices need horizontal breathing room. */
+@media (max-height: 560px) and (orientation: landscape) {
+  :root { --player-bar-space: 56px; }
+
+  .family-toolbar {
+    display: flex;
+    overflow-x: auto;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+  }
+
+  .family-toolbar::-webkit-scrollbar { display: none; }
+  .family-player { flex: 0 0 auto; }
+  .family-toolbar .currency-pill { min-height: 36px; }
+  .family-toolbar button { min-height: 36px; }
+
+  .start-page {
+    padding-top: calc(var(--player-bar-space) + env(safe-area-inset-top));
+  }
+
+  .start-scene {
+    width: min(100%, calc((100dvh - var(--player-bar-space) - 12px) * 1.25));
+  }
+
+  .page-shell,
+  .memory-game-page {
+    padding-top: calc(var(--player-bar-space) + env(safe-area-inset-top));
+  }
+
+  .book-spread.single-page-book {
+    width: min(72vw, 660px);
+    aspect-ratio: 4 / 4.7;
+  }
+
+  .memory-game-heading h1 { font-size: clamp(1.8rem, 6vh, 3rem); }
+  .rabbit-maze-progress { margin-block: 5px 10px; }
+  .memory-card-grid { width: min(72vw, 720px); margin-block: 10px; }
+
+  .tunnel-page {
+    padding-top: var(--player-bar-space);
+    background-position: center var(--player-bar-space);
+  }
+
+  .ball-ready-page {
+    padding-top: var(--player-bar-space);
+  }
+}
+
+/* Foldables and tablets retain spacious desktop composition with fluid bounds. */
+@media (min-width: 601px) and (max-width: 1100px) {
+  .family-toolbar {
+    width: fit-content;
+    max-width: calc(100% - 12px - env(safe-area-inset-left) - env(safe-area-inset-right));
+    margin-inline: auto;
+  }
+
+  .start-scene {
+    aspect-ratio: auto;
+  }
+
+  .memory-card-grid {
+    grid-template-columns: repeat(4, minmax(80px, 1fr));
+  }
+
+  .ball-task-grid,
+  .ready-stage .ball-task-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Let the interactive Grandma scene fill portrait phones without distortion. */
+@media (max-width: 600px) and (orientation: portrait) {
+  .start-page {
+    position: relative;
+    isolation: isolate;
+    display: block;
+    min-height: 100dvh;
+    padding: calc(var(--player-bar-space) + env(safe-area-inset-top)) 0 0;
+    overflow: hidden;
+    background: #89cfa8;
+  }
+
+  .start-page::before {
+    content: none;
+  }
+
+  .start-page::after {
+    content: none;
+  }
+
+  .start-scene {
+    width: 100%;
+    height: calc(100dvh - var(--player-bar-space) - env(safe-area-inset-top));
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: #89cfa8;
+    box-shadow: none;
+  }
+
+  .start-scene-art {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+  }
+
+  .start-scene-picture {
+    width: 100%;
+    height: 100%;
+  }
+
+  .desktop-scene-layer {
+    display: none;
+  }
+
+  .portrait-scene-layer {
+    display: block;
+  }
+
+  .portrait-reaction-overlay {
+    position: absolute;
+    z-index: 3;
+    height: auto;
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .grandma-portrait-wave {
+    left: -1%;
+    top: auto;
+    bottom: 15%;
+    width: 56%;
+    transform-origin: 54% 82%;
+    animation: portrait-grandma-wave 1.4s ease-in-out both;
+  }
+
+  .grandma-portrait-rest {
+    left: 0;
+    top: auto;
+    bottom: 12%;
+    width: 50%;
+  }
+
+  .cracker-portrait-rest {
+    left: 44%;
+    top: 23%;
+    width: 36%;
+  }
+
+  .cracker-portrait-fluff {
+    left: 50%;
+    top: 24%;
+    width: 26%;
+    transform-origin: 50% 50%;
+    animation: portrait-cracker-fluff 1.4s ease-in-out both;
+  }
+
+  .rabbit-portrait-rest {
+    left: 57%;
+    top: 76%;
+    width: 18%;
+  }
+
+  .portrait-tree-rustle {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    clip-path: polygon(0 13%, 52% 13%, 52% 43%, 0 43%);
+    transform-origin: 27% 29%;
+  }
+
+  .grandma-hotspot {
+    left: 6%;
+    top: 43%;
+    width: 31%;
+    height: 40%;
+  }
+
+  .tree-leaves-hotspot {
+    left: 2%;
+    top: 13%;
+    width: 51%;
+    height: 30%;
+  }
+
+  .macaw-hotspot {
+    left: 53%;
+    top: 25%;
+    width: 22%;
+    height: 27%;
+  }
+
+  .rabbit-hotspot {
+    left: 59%;
+    top: 75%;
+    width: 17%;
+    height: 14%;
+  }
+
+  .rabbit-hole-hotspot {
+    left: 68%;
+    top: 71%;
+    width: 27%;
+    height: 13%;
+  }
+
+  .portrait-rabbit-runner {
+    z-index: 4;
+    left: 58%;
+    top: 76%;
+    width: 19%;
+    animation: portrait-rabbit-run-into-hole 1.05s ease-in both;
+  }
+
+  .grandma-reaction {
+    left: 27%;
+    top: 43%;
+  }
+
+  .macaw-reaction {
+    left: 57%;
+    top: 25%;
+  }
+}
+
+@keyframes portrait-rabbit-run-into-hole {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  24% { transform: translate(28%, -12%) scale(.92) rotate(-3deg); }
+  48% { transform: translate(58%, 3%) scale(.76) rotate(3deg); }
+  72% { transform: translate(88%, -7%) scale(.55) rotate(-2deg); }
+  90% { transform: translate(112%, 2%) scale(.3); opacity: 1; }
+  100% { transform: translate(126%, 4%) scale(.08); opacity: 0; }
+}
+
+@keyframes portrait-grandma-wave {
+  0%, 100% { transform: rotate(0deg); }
+  22% { transform: rotate(-1.2deg); }
+  46% { transform: rotate(.8deg); }
+  70% { transform: rotate(-.6deg); }
+}
+
+@keyframes portrait-cracker-fluff {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  18% { transform: rotate(-2deg) scale(1.04); }
+  38% { transform: rotate(2.5deg) scale(.99); }
+  58% { transform: rotate(-1.5deg) scale(1.03); }
+  78% { transform: rotate(1deg) scale(1); }
+}
