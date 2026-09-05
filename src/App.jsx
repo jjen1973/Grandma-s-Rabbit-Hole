@@ -1142,6 +1142,7 @@ function PurchaseConfirmationDialog({ icon, title, message, confirmLabel, cancel
 
 function TunnelPage({ family, onOpenColoring, onOpenMemory, onOpenBallReady, onOpenBooks, onGoHome }) {
   const [deepTunnelStage, setDeepTunnelStage] = useState('waiting');
+
   const [booksMessage, setBooksMessage] = useState('');
   const [unlockingBooks, setUnlockingBooks] = useState(false);
   const [confirmBooksPurchase, setConfirmBooksPurchase] = useState(false);
@@ -1195,6 +1196,9 @@ function TunnelPage({ family, onOpenColoring, onOpenMemory, onOpenBallReady, onO
         <p>Welcome down the rabbit hole!</p>
         <h1>Pick a Tunnel</h1>
       </header>
+      <div className="tunnel-viewport">
+      <div className="tunnel-scene">
+      <div className="deeper-tunnel-background" aria-hidden="true" />
       <section className="activity-doors" aria-label="Activity rabbit holes">
         <button type="button" className="activity-door tunnel-entrance outer-tunnel-entrance tunnel-slot-outer-left-1 coloring-door" data-tunnel-name="Outer Left 1" onClick={onOpenColoring} aria-label="Enter Outer Left 1 to open the Coloring Book">
           <span className="door-icon" aria-hidden="true">📖</span>
@@ -1322,12 +1326,16 @@ function TunnelPage({ family, onOpenColoring, onOpenMemory, onOpenBallReady, onO
           onConfirm={purchaseBooks}
         />
       ) : null}
+      <img className="tunnel-guide-rabbit" src="/pages/start-page/rabbit-runner.png" alt="The white rabbit waits beside the activity rabbit holes" />
+      </div>
+      </div>
+      <div className="tunnel-decoration" aria-hidden="true" />
       {deepTunnelStage === 'revealed' ? (
         <button type="button" className="tunnel-back-one-button" onClick={() => setDeepTunnelStage('returning')}>
           <span aria-hidden="true">&#8617;</span> Back One Tunnel
         </button>
       ) : null}
-      <img className="tunnel-guide-rabbit" src="/pages/start-page/rabbit-runner.png" alt="The white rabbit waits beside the activity rabbit holes" />
+
     </main>
   );
 }
