@@ -1,0 +1,65 @@
+{
+  "sourceProject": "pip-waffles-books",
+  "assets": [
+    {
+      "source": "03-the-missing-carrot-mystery/artwork/evidence-dirt.png",
+      "destination": "public/pages/waffles-book-3/evidence-dirt.png",
+      "sha256": "ea910289f18ca287cfdcb0d5bd40c79a1df996892e5a1466b1977165a809d1e5"
+    },
+    {
+      "source": "03-the-missing-carrot-mystery/artwork/empty-patch.png",
+      "destination": "public/pages/waffles-book-3/empty-patch.png",
+      "sha256": "1c2c379c69a864df08b03669fd6cfecd3791b5108cf77a131067c58ba4ff850b"
+    },
+    {
+      "source": "03-the-missing-carrot-mystery/artwork/carrot-rescue.png",
+      "destination": "public/pages/waffles-book-3/carrot-rescue.png",
+      "sha256": "edccab8c8769fbe4791dc5b5c79cef39c2adf198e0d470abec97043aca47620a"
+    },
+    {
+      "source": "03-the-missing-carrot-mystery/artwork/mouse-witness.png",
+      "destination": "public/pages/waffles-book-3/mouse-witness.png",
+      "sha256": "0efb94eaf0d80499360313bc1ec60bcdd02d53e5b80f42c703f624dd601617a6"
+    },
+    {
+      "source": "03-the-missing-carrot-mystery/artwork/sneaky-flower.png",
+      "destination": "public/pages/waffles-book-3/sneaky-flower.png",
+      "sha256": "6dad2b3b954246079b674119b834a063876d018eee924963fc8e4a1f0373c601"
+    },
+    {
+      "source": "03-the-missing-carrot-mystery/artwork/cover.png",
+      "destination": "public/pages/waffles-book-3/cover.png",
+      "sha256": "34f7d958f5fe7646a697b731ad3708e94350726b3094c33d967e3e61751a7634"
+    },
+    {
+      "source": "04-investigate-the-garden/artwork/mole.png",
+      "destination": "public/pages/waffles-book-4/mole.png",
+      "sha256": "f66480e65dadeeb1ad1b03e2bf746bf0b4545eebdd8ec62f652739156b917be2"
+    },
+    {
+      "source": "04-investigate-the-garden/artwork/caterpillar.png",
+      "destination": "public/pages/waffles-book-4/caterpillar.png",
+      "sha256": "4d1403b700d64e6e990321163c89bdbee71a875bb5ee6ac04061cade55ae4bd0"
+    },
+    {
+      "source": "04-investigate-the-garden/artwork/squirrel.png",
+      "destination": "public/pages/waffles-book-4/squirrel.png",
+      "sha256": "a9824d931469530afb8aaeb22e6a716b38dc251f6128fa88cc3ffba4a864533c"
+    },
+    {
+      "source": "04-investigate-the-garden/artwork/cover.png",
+      "destination": "public/pages/waffles-book-4/cover.png",
+      "sha256": "7292196953bba2146e28495f3406a7cbbfa214bb6da5060c4f70f56dcf8d962d"
+    },
+    {
+      "source": "04-investigate-the-garden/artwork/tomato.png",
+      "destination": "public/pages/waffles-book-4/tomato.png",
+      "sha256": "3ecb04caf57b8ffbfba307ed3e74b4631ea21d434f89d6f86bc8f5ba92c654f0"
+    },
+    {
+      "source": "04-investigate-the-garden/artwork/friends.png",
+      "destination": "public/pages/waffles-book-4/friends.png",
+      "sha256": "dfa0342d67539af3172d5a290ec4b72d3c0a46b8345eb1a5aeb1d03cc297e4f9"
+    }
+  ]
+}

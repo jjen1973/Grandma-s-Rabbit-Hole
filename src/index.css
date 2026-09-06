@@ -2533,6 +2533,14 @@ svg {
   text-align: center;
 }
 
+/* Reserve space for the fixed family toolbar above the book navigation. */
+@media (max-width: 1100px) and (orientation: portrait) {
+  .books-choice-page,
+  .story-book-page {
+    padding-top: calc(var(--player-bar-space, 72px) + env(safe-area-inset-top) + 12px);
+  }
+}
+
 .books-choice-page header p {
   margin: 1rem 0 0;
   font-size: clamp(1rem, 2vw, 1.4rem);
@@ -2713,7 +2721,28 @@ svg {
   line-height: 1.45;
 }
 
-.tookie-story-text p { margin: 0; }
+.tookie-story-text p { margin: 0; white-space: pre-line; }
+
+.book-addition-caption {
+  display: block;
+  margin-top: .4rem;
+  font-size: .85rem;
+  line-height: 1.4;
+}
+
+.book-addition-offer {
+  display: grid;
+  gap: .5rem;
+  width: min(100%, 760px);
+  margin: 1.5rem auto 0;
+  padding: 1rem;
+  border: 3px solid #7d5415;
+  border-radius: 20px;
+  background: #fff2b9;
+  color: #4b2c1d;
+  font: inherit;
+  cursor: pointer;
+}
 .tookie-story-text strong { display: block; margin-top: .75rem; font-size: 1.35em; }
 
 .story-page-controls {

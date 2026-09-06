@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import FamilyGate from './FamilyGate';
+import wafflesBook3 from './content/waffles-book-3.json';
+import wafflesBook4 from './content/waffles-book-4.json';
 
 const pages = [
   { letter: 'A', title: 'Apple', image: '/pages/letter-book/a-apple.png', description: 'A big apple page for the first letter.', accent: '#ff6b6b' },
@@ -945,6 +947,8 @@ const acornEmergencyStoryPages = [
 // Book collection map: add future Waffles and Pip releases to `books` below.
 // A book becomes readable when `readerKey` matches an entry in storyBooksById.
 const storyBooksById = {
+  'waffles-and-pip-3': wafflesBook3,
+  'waffles-and-pip-4': wafflesBook4,
   tookie: {
     title: 'Tookie the Babysitter Cat',
     cover: '/pages/tookie-book/cover.png',
@@ -962,6 +966,8 @@ const storyBooksById = {
   },
 };
 
+const WAFFLES_ADDITION_ID = 'waffles-and-pip-books-3-4';
+
 const bookCollections = {
   wafflesAndPip: {
     id: 'waffles-and-pip',
@@ -970,6 +976,16 @@ const bookCollections = {
     artwork: '/pages/waffles-book/waffles-pip-adventures.png',
     artworkAlt: 'Waffles the white rabbit and Pip the blue bird',
     books: [
+      ...[wafflesBook3, wafflesBook4].map((book, index) => ({
+        id: `waffles-and-pip-book-${index + 3}`,
+        number: index + 3,
+        title: index === 0 ? 'The Missing Carrot Mystery' : 'Investigate the Garden',
+        cover: book.cover,
+        coverAlt: book.title,
+        readerKey: `waffles-and-pip-${index + 3}`,
+        available: true,
+        unlockItem: WAFFLES_ADDITION_ID,
+      })),
       {
         id: 'waffles-and-pip-book-1',
         number: 1,
@@ -1011,13 +1027,55 @@ const deepTunnelDoors = [
   { slot: tunnelSlots.deepRight1, name: 'Deep Right 1', activity: 'lily' },
 ];
 
-function BooksPage({ onExit }) {
+function BooksPage({ onExit, family }) {
   const [selectedBook, setSelectedBook] = useState(null);
   const [selectedSeries, setSelectedSeries] = useState(null);
   const [pageIndex, setPageIndex] = useState(-1);
   const [message, setMessage] = useState('');
+  const [confirmAddition, setConfirmAddition] = useState(false);
+  const [purchasing, setPurchasing] = useState(false);
+  const purchaseInFlight = useRef(false);
+  const additionUnlocked = (family?.child?.ownedItems || []).includes(WAFFLES_ADDITION_ID);
 
-  if (selectedBook) {
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [selectedBook, selectedSeries, pageIndex]);
+
+  const unlockAddition = async () => {
+    if (purchaseInFlight.current) return;
+    purchaseInFlight.current = true;
+    setPurchasing(true);
+    setMessage('');
+    try {
+      if (!family?.purchaseItem) throw new Error('Choose a child profile to unlock these books.');
+      if (!additionUnlocked && (family.child?.goldCarrots || 0) < 1) {
+        throw new Error('You need 1 gold carrot to unlock both books.');
+      }
+      const purchased = await family.purchaseItem(WAFFLES_ADDITION_ID, 0, 1);
+      if (!purchased) throw new Error('Choose a child profile to unlock these books.');
+      setConfirmAddition(false);
+      setMessage('Books 3 and 4 are unlocked!');
+    } catch (error) {
+      setMessage(error.message || 'Could not unlock the books. Please try again.');
+    } finally {
+      purchaseInFlight.current = false;
+      setPurchasing(false);
+    }
+  };
+
+  const additionDialog = confirmAddition ? (
+    <PurchaseConfirmationDialog
+      icon={'\uD83E\uDD55'}
+      title="Unlock Books 3 & 4?"
+      message={message || 'Get The Missing Carrot Mystery and Investigate the Garden together for 1 gold carrot.'}
+      confirmLabel="1 gold carrot"
+      busy={purchasing}
+      onCancel={() => { setConfirmAddition(false); setMessage(''); }}
+      onConfirm={unlockAddition}
+    />
+  ) : null;
+
+  if (selectedBook && (!['waffles-and-pip-3', 'waffles-and-pip-4'].includes(selectedBook) || additionUnlocked)) {
     const book = storyBooksById[selectedBook];
     const storyPages = book.pages;
     const cover = book.cover;
@@ -1040,7 +1098,7 @@ function BooksPage({ onExit }) {
               <img src={page.image} alt={page.alt} />
               <div className="tookie-story-text">
                 <p>{page.text}</p>
-                {pageIndex === storyPages.length - 1 ? <strong>The End</strong> : null}
+                {pageIndex === storyPages.length - 1 && !page.text.trim().endsWith('The End') ? <strong>The End</strong> : null}
               </div>
             </article>
           )}
@@ -1068,21 +1126,27 @@ function BooksPage({ onExit }) {
           <h1>{collection.title}</h1>
         </header>
         <section className="book-picture-choices waffles-pip-book-choices" aria-label="Choose a Waffles and Pip adventure">
-          {collection.books.map((book) => (
+          {[...collection.books].sort((a, b) => a.number - b.number).map((book) => (
             <button
               type="button"
               className={`book-picture-choice ${book.available ? '' : 'series-book-coming-soon'}`}
               key={book.id}
               disabled={!book.available}
-              onClick={() => { setSelectedBook(book.readerKey); setPageIndex(-1); }}
-              aria-label={`${book.available ? 'Open' : 'Coming soon:'} ${collection.title} Book ${book.number}, ${book.title}`}
+              onClick={() => {
+                if (book.unlockItem && !additionUnlocked) { setMessage(''); setConfirmAddition(true); return; }
+                setSelectedBook(book.readerKey); setPageIndex(-1);
+              }}
+              aria-label={`${book.unlockItem && !additionUnlocked ? 'Unlock Books 3 and 4 for 1 gold carrot:' : 'Open'} ${collection.title} Book ${book.number}, ${book.title}`}
             >
               <img src={book.cover} alt={book.coverAlt} />
+              {book.unlockItem && !additionUnlocked ? <span className="book-series-count">Locked · 2 books / 1 gold carrot</span> : null}
               <strong>Book {book.number}</strong>
               <small>{book.title}{book.available ? '' : ' — Coming Soon'}</small>
             </button>
           ))}
         </section>
+        <p className="book-choice-message" aria-live="polite">{message}</p>
+        {additionDialog}
       </main>
     );
   }
@@ -1102,13 +1166,21 @@ function BooksPage({ onExit }) {
         <button type="button" className="book-picture-choice" onClick={() => setSelectedSeries(bookCollections.wafflesAndPip.id)} aria-label={`Open ${bookCollections.wafflesAndPip.shelfTitle}`}>
           <span className="book-series-count">{bookCollections.wafflesAndPip.books.length}-Book Series</span>
           <img src={bookCollections.wafflesAndPip.artwork} alt={bookCollections.wafflesAndPip.artworkAlt} />
-          <strong>{bookCollections.wafflesAndPip.shelfTitle}</strong>
+          <strong>{bookCollections.wafflesAndPip.shelfTitle}<span className="book-addition-caption">{additionUnlocked ? 'Books 3 & 4 unlocked' : 'Books 3 & 4 · 2 books for 1 gold carrot'}</span></strong>
         </button>
         <button type="button" className="book-picture-choice locked-book-choice" disabled aria-label="Locked book">
           <span aria-hidden="true">&#128274;</span>
         </button>
       </section>
+      <button type="button" className="book-addition-offer" onClick={() => {
+        if (additionUnlocked) setSelectedSeries(bookCollections.wafflesAndPip.id);
+        else { setMessage(''); setConfirmAddition(true); }
+      }}>
+        <strong>Waffles and Pip · Books 3 &amp; 4</strong>
+        <span>{additionUnlocked ? 'Both books unlocked — Read now' : '2-book addition · 1 gold carrot to unlock both'}</span>
+      </button>
       <p className="book-choice-message" aria-live="polite">{message}</p>
+      {additionDialog}
     </main>
   );
 }
@@ -1661,7 +1733,7 @@ function ToddlerApp({ family }) {
   }
 
   if (route === '/books') {
-    return <BooksPage onExit={() => navigate('/tunnel')} />;
+    return <BooksPage key={family?.child?.id || 'books-player'} family={family} onExit={() => navigate('/tunnel')} />;
   }
 
   if (BALL_READY_ENABLED && route === '/ball-ready') {
