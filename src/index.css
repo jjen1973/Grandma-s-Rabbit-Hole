@@ -4478,3 +4478,10 @@ input {
   .tunnel-scene .deep-tunnel-hotspot span { font-size: clamp(12px, 3vw, 18px); }
   .tunnel-scene .tunnel-guide-rabbit { left: 50%; bottom: 9%; width: 16%; }
 }
+
+.family-password-field { display: grid; gap: 7px; }
+.family-password-control { position: relative; }
+.family-password-control input { width: 100%; min-width: 0; padding-right: 60px; }
+.family-form .family-password-toggle { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border-radius: 10px; background: transparent; color: #5940a0; }
+.family-form .family-password-toggle:hover { background: #eee8f5; }
+.family-form .family-password-toggle:focus-visible { outline: 3px solid #5940a0; outline-offset: -2px; }
