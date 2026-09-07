@@ -366,6 +366,7 @@ export default function FamilyGate({ children }) {
         <div className='family-mark' aria-hidden='true'>A B C</div>
         <h1>Parent sign {registering ? 'up' : 'in'}</h1>
         <p>Only parents need an email. Children have profiles inside the family account.</p>
+        <p><a href='/privacy'>Privacy Policy</a></p>
         <form className='family-form' onSubmit={submitAccount}>
           <label>Parent email<input type='email' value={email} onChange={(event) => setEmail(event.target.value)} autoComplete='email' required /></label>
           <label>Password<input type='password' value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={registering ? 'new-password' : 'current-password'} minLength='6' required /></label>
@@ -390,6 +391,7 @@ export default function FamilyGate({ children }) {
       <section className='family-card family-card-wide'>
         <h1>Who is playing?</h1>
         <p className='family-email'>Parent: {user.email}</p>
+        <p><a href='/privacy'>Privacy Policy</a></p>
         {profiles.length ? <div className='child-grid'>{profiles.map((profile) => (
           <button className='child-choice' type='button' key={profile.id} onClick={() => chooseChild(profile)}>
             <strong>{profile.name}</strong>
