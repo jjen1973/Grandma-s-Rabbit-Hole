@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@mipmap/ic_launcher" />
+    <item>
+        <vector android:width="108dp" android:height="108dp"
+            android:viewportWidth="108" android:viewportHeight="108">
+            <path android:fillColor="#FF6D00" android:pathData="M0,64 H108 V94 H0 Z" />
+            <!-- White DEV badge, drawn as paths to avoid font dependencies. -->
+            <path android:fillColor="#FFFFFF" android:fillType="evenOdd"
+                android:pathData="M22,69 H32 L38,75 V83 L32,89 H22 Z M27,74 V84 H30 L33,81 V77 L30,74 Z M44,69 H59 V74 H49 V77 H57 V81 H49 V84 H59 V89 H44 Z M64,69 H70 L75,82 L80,69 H86 L78,89 H72 Z" />
+        </vector>
+    </item>
+</layer-list>

@@ -1,0 +1,15 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:icon="@mipmap/ic_launcher_debug"
+        android:roundIcon="@mipmap/ic_launcher_debug_round"
+        android:label="Grandma's Rabbit Hole DEV"
+        tools:replace="android:icon,android:roundIcon,android:label">
+        <activity
+            android:name=".MainActivity"
+            android:label="Grandma's Rabbit Hole DEV"
+            tools:replace="android:label" />
+    </application>
+
+</manifest>
