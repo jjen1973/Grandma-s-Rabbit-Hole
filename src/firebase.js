@@ -2,6 +2,8 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
+// Both apps use Grandma's backend after the original accounts and progress were copied.
+// The Android application ID and Firebase Hosting project can differ from this backend.
 const firebaseConfig = {
   apiKey: 'AIzaSyCwMSlX_65PucPyH_KHdTQss95_GDKipl4',
   authDomain: 'grandmas-rabbit-hole.firebaseapp.com',

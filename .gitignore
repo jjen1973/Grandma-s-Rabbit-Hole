@@ -5,3 +5,4 @@ dist/
 Microsoft/
 .firebase/
 firebase-debug.log
+.firebase-migration/
