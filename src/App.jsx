@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import FamilyGate from './FamilyGate';
 import wafflesBook3 from './content/waffles-book-3.json';
 import wafflesBook4 from './content/waffles-book-4.json';
+import wafflesBook5 from './content/waffles-book-5.json';
 
 const pages = [
   { letter: 'A', title: 'Apple', image: '/pages/letter-book/a-apple.png', description: 'A big apple page for the first letter.', accent: '#ff6b6b' },
@@ -947,6 +948,7 @@ const acornEmergencyStoryPages = [
 // Book collection map: add future Waffles and Pip releases to `books` below.
 // A book becomes readable when `readerKey` matches an entry in storyBooksById.
 const storyBooksById = {
+  'waffles-and-pip-5': wafflesBook5,
   'waffles-and-pip-3': wafflesBook3,
   'waffles-and-pip-4': wafflesBook4,
   tookie: {
@@ -976,6 +978,15 @@ const bookCollections = {
     artwork: '/pages/waffles-book/waffles-pip-adventures.png',
     artworkAlt: 'Waffles the white rabbit and Pip the blue bird',
     books: [
+      {
+        id: 'waffles-and-pip-book-5',
+        number: 5,
+        title: 'The Pig Who Wasn’t Bacon',
+        cover: wafflesBook5.cover,
+        coverAlt: wafflesBook5.title,
+        readerKey: 'waffles-and-pip-5',
+        available: true,
+      },
       ...[wafflesBook3, wafflesBook4].map((book, index) => ({
         id: `waffles-and-pip-book-${index + 3}`,
         number: index + 3,
