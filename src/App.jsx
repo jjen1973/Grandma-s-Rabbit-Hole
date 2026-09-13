@@ -3,6 +3,7 @@ import FamilyGate from './FamilyGate';
 import wafflesBook3 from './content/waffles-book-3.json';
 import wafflesBook4 from './content/waffles-book-4.json';
 import wafflesBook5 from './content/waffles-book-5.json';
+import wafflesColoring from './content/waffles-coloring.json';
 
 const pages = [
   { letter: 'A', title: 'Apple', image: '/pages/letter-book/a-apple.png', description: 'A big apple page for the first letter.', accent: '#ff6b6b' },
@@ -202,7 +203,7 @@ function PageArtwork({ page, crayonColor, strokes = [], onStrokeComplete }) {
   );
 }
 
-function PageFace({ page, side, blank, drawingTool, strokes, onStrokeComplete, onPickUpEraser, eraserHeld, onResetPage, onResetColoring, onRestartBook, hasColoring }) {
+function PageFace({ page, side, blank, drawingTool, strokes, onStrokeComplete, onPickUpEraser, eraserHeld, onResetPage, onResetColoring, onRestartBook, hasColoring, rewarded }) {
   if (blank) {
     return (
       <article className={`page-sheet ${side} blank`}>
@@ -233,13 +234,13 @@ function PageFace({ page, side, blank, drawingTool, strokes, onStrokeComplete, o
 
   return (
     <article className={`page-sheet ${side}`} style={{ '--page-accent': page.accent }}>
-      {strokes?.some((stroke) => !stroke.erase) ? (
-        <span className="page-complete-star" role="img" aria-label={`Letter ${page.letter} page colored`}>
+      {rewarded ? (
+        <span className="page-complete-star" role="img" aria-label={`${page.title} page colored`}>
           ★
         </span>
       ) : null}
       <div className="page-sheet__top">
-        <span>Letter {page.letter}</span>
+        <span>{page.label}</span>
         <span>{page.title}</span>
       </div>
       <PageArtwork page={page} crayonColor={drawingTool} strokes={strokes} onStrokeComplete={onStrokeComplete} />
@@ -249,7 +250,7 @@ function PageFace({ page, side, blank, drawingTool, strokes, onStrokeComplete, o
           className={`page-eraser-button ${eraserHeld ? 'held' : ''}`}
           onClick={onPickUpEraser}
           aria-pressed={eraserHeld}
-          aria-label={`${eraserHeld ? 'Put down' : 'Pick up'} eraser for letter ${page.letter}`}
+          aria-label={`${eraserHeld ? 'Put down' : 'Pick up'} eraser for ${page.title}`}
         >
           <span className="eraser-icon" aria-hidden="true" />
           Eraser
@@ -259,7 +260,7 @@ function PageFace({ page, side, blank, drawingTool, strokes, onStrokeComplete, o
           className="reset-page-button"
           onClick={onResetPage}
           disabled={!strokes?.length}
-          aria-label={`Reset coloring on letter ${page.letter}`}
+          aria-label={`Reset coloring on ${page.title}`}
         >
           Reset this page
         </button>
@@ -284,7 +285,62 @@ function BookCover({ onOpen }) {
   );
 }
 
+const coloringBooks = [
+  { id: 'abc', title: 'ABC Coloring Book', cover: '/pages/letter-book/a-apple.png', pages: pages.map((page) => ({ ...page, id: page.letter, label: `Letter ${page.letter}` })) },
+  { id: 'waffles-pip', title: 'Waffles & Pip Adventures', cover: '/pages/waffles-book/waffles-pip-adventures.png', pages: wafflesColoring.pages.map((page) => ({ ...page, id: `waffles-pip-${page.number}`, label: `Picture ${page.number}`, accent: '#f4a261' })) },
+];
+
+// Original named paints from Waffles & Pip's paint table.
+const wafflesPaints = [['Berry red', '#e75b63'], ['Carrot orange', '#ef9748'], ['Sunshine yellow', '#f6d75c'], ['Leaf green', '#83b567'], ['Sky blue', '#58a9da'], ['Deep blue', '#537abb'], ['Lilac purple', '#a285c9'], ['Blossom pink', '#edacc0'], ['Earth brown', '#a57854'], ['Warm sand', '#dec7a0'], ['Soft gray', '#a6a9ab'], ['Midnight', '#424654']];
+
+function WafflesPaintStudio({ initialPage, family, onExit, onChoosePicture, onChangeBook }) {
+  const frame = useRef(null);
+  const pending = useRef(new Set());
+  const [activePage, setActivePage] = useState(initialPage);
+  const [frameHeight, setFrameHeight] = useState(650);
+  const pageId = `waffles-pip-${activePage + 1}`;
+  useEffect(() => {
+    const resize = () => setFrameHeight(Math.max(300, window.innerHeight - frame.current.getBoundingClientRect().top - 8));
+    resize();
+    const observer = new ResizeObserver(resize);
+    const toolbar = document.querySelector('.family-toolbar');
+    if (toolbar) observer.observe(toolbar);
+    window.addEventListener('resize', resize);
+    return () => { observer.disconnect(); window.removeEventListener('resize', resize); };
+  }, []);
+  useEffect(() => {
+    const receive = (event) => {
+      if (event.source !== frame.current?.contentWindow || event.origin !== window.location.origin) return;
+      const { type, page } = event.data || {};
+      if (!Number.isInteger(page) || page < 0 || page >= wafflesColoring.pages.length) return;
+      if (type === 'waffles-page') setActivePage(page);
+      if (type !== 'waffles-colored' || !family?.awardColoringPage) return;
+      const id = `waffles-pip-${page + 1}`;
+      if (family.child?.coloringRewards?.includes(id) || pending.current.has(id)) return;
+      pending.current.add(id);
+      family.awardColoringPage(id, 'waffles-pip').catch(() => {}).finally(() => pending.current.delete(id));
+    };
+    window.addEventListener('message', receive);
+    return () => window.removeEventListener('message', receive);
+  }, [family]);
+  const player = `${family?.user?.uid || 'guest'}:${family?.child?.id || 'guest'}`;
+  return (
+    <main className="coloring-workspace waffles-studio-workspace">
+      <nav className="coloring-navigation" aria-label="Coloring navigation">
+        <button type="button" onClick={onExit}>← Tunnel</button>
+        <button type="button" onClick={onChangeBook}>Change Book</button>
+        <button type="button" onClick={onChoosePicture}>Choose Picture</button>
+        <span role="status">{family?.child?.coloringRewards?.includes(pageId) ? '★ Star earned' : 'Color to earn a star'}</span>
+      </nav>
+      <iframe ref={frame} title="Waffles and Pip complete paint studio" src={`/waffles-studio/index.html?page=${initialPage}&player=${encodeURIComponent(player)}`} style={{ width: '100%', height: frameHeight, border: 0, display: 'block' }} />
+    </main>
+  );
+}
+
 function ColoringBook({ onExit, family }) {
+  const [bookId, setBookId] = useState(null);
+  const book = coloringBooks.find((item) => item.id === bookId);
+  const pages = book?.pages || [];
   const [pageIndex, setPageIndex] = useState(-1);
   const [turn, setTurn] = useState(null);
   const [selectedColor, setSelectedColor] = useState(crayons[0]);
@@ -297,8 +353,20 @@ function ColoringBook({ onExit, family }) {
   const currentPage = pages[pageIndex] || null;
   const isCover = pageIndex === -1;
   const isEnd = pageIndex === pages.length;
-  const hasColoring = Object.values(drawings).some((strokes) => strokes.some((stroke) => !stroke.erase));
+  const hasColoring = pages.some((page) => drawings[page.id]?.some((stroke) => !stroke.erase));
   const drawingTool = eraserHeld ? 'eraser' : heldColor;
+  const usesPaint = bookId === 'waffles-pip';
+
+  useEffect(() => {
+    const initialColor = bookId === 'waffles-pip' ? wafflesPaints[4][1] : crayons[0];
+    setSelectedColor(initialColor);
+    setHeldColor(bookId === 'waffles-pip' ? initialColor : null);
+    setEraserHeld(false);
+  }, [bookId]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [bookId, pageIndex]);
 
   useEffect(() => {
     if (!turn) {
@@ -316,7 +384,7 @@ function ColoringBook({ onExit, family }) {
     }, 620);
 
     return () => window.clearTimeout(timeoutId);
-  }, [turn]);
+  }, [turn, bookId]);
 
   useEffect(() => {
     if (!heldColor && !eraserHeld) {
@@ -361,9 +429,9 @@ function ColoringBook({ onExit, family }) {
       [letter]: [...(current[letter] || []), stroke],
     }));
     const alreadyRewarded = family?.child?.coloringRewards?.includes(letter);
-    if (!stroke.erase && !alreadyRewarded && !rewardRequests.current.has(letter)) {
+    if (family?.awardColoringPage && !stroke.erase && !alreadyRewarded && !rewardRequests.current.has(letter)) {
       rewardRequests.current.add(letter);
-      family?.awardColoringPage(letter).catch(() => rewardRequests.current.delete(letter));
+      family.awardColoringPage(letter, bookId).catch(() => rewardRequests.current.delete(letter));
     }
   };
 
@@ -392,9 +460,39 @@ function ColoringBook({ onExit, family }) {
     setTurn({ direction: 'prev' });
   };
 
+  if (!book || isCover) {
+    return (
+      <main className="books-choice-page coloring-library">
+        <nav className="coloring-navigation" aria-label="Coloring navigation">
+          <button type="button" onClick={onExit}>← Tunnel</button>
+          {book ? <button type="button" onClick={() => { restartBook(); setBookId(null); }}>Change Book</button> : null}
+        </nav>
+        <header><p>{book ? book.title : 'Pick a cover'}</p><h1>{book ? 'Choose a Picture' : 'Choose a Coloring Book'}</h1></header>
+        <section className={`book-picture-choices ${book ? 'coloring-picture-grid' : 'coloring-cover-grid'}`} aria-label={book ? 'Coloring pictures' : 'Coloring books'}>
+          {book ? pages.map((page, index) => (
+            <button type="button" className="book-picture-choice" key={page.id} onClick={() => setPageIndex(index)} aria-label={`Color ${page.title}`}>
+              <img src={page.image} alt={page.title} loading="lazy" />
+              <strong>{page.title}</strong>
+              <small>{family?.child?.coloringRewards?.includes(page.id) ? '★ Star earned' : page.label}</small>
+            </button>
+          )) : coloringBooks.map((choice) => (
+            <button type="button" className="book-picture-choice" key={choice.id} onClick={() => setBookId(choice.id)}>
+              <img src={choice.cover} alt={choice.id === 'abc' ? 'Apple and the letter A' : 'Waffles the rabbit and Pip the bird'} />
+              <strong>{choice.title}</strong><small>{choice.pages.length} pictures · Pick any page</small>
+            </button>
+          ))}
+        </section>
+      </main>
+    );
+  }
+
+  if (usesPaint) {
+    return <WafflesPaintStudio initialPage={pageIndex} family={family} onExit={onExit} onChoosePicture={restartBook} onChangeBook={() => { restartBook(); setBookId(null); }} />;
+  }
+
   return (
-    <div className={`page-shell ${drawingTool ? 'holding-tool' : ''}`}>
-      {heldColor ? (
+    <div className={`page-shell coloring-workspace ${drawingTool && (!usesPaint || eraserHeld) ? 'holding-tool' : ''}`}>
+      {heldColor && !usesPaint ? (
         <div
           className="crayon held-crayon"
           style={{ '--crayon-color': heldColor, left: pointerPosition.x, top: pointerPosition.y }}
@@ -411,34 +509,39 @@ function ColoringBook({ onExit, family }) {
         />
       ) : null}
       <button type="button" className="back-to-tunnel" onClick={onExit}>
-        <span aria-hidden="true">←</span> Activity doors
+        <span aria-hidden="true">←</span> Tunnel
       </button>
+      <nav className="coloring-navigation" aria-label="Coloring navigation">
+        <button type="button" onClick={() => { restartBook(); setBookId(null); }}>Change Book</button>
+        <button type="button" onClick={restartBook}>Choose Picture</button>
+      </nav>
       <header className="hero">
         <div>
-          <h1 className="hero-title">A-Z Coloring</h1>
+          <h1 className="hero-title">{book.title}</h1>
         </div>
         <div className="hero-pill">
-          {isCover ? 'Front cover' : isEnd ? 'The End' : `Letter ${currentPage.letter} · ${pageIndex + 1} of ${pages.length}`}
+          {isEnd ? 'The End' : `${currentPage.label} · ${pageIndex + 1} of ${pages.length}`}
         </div>
       </header>
 
       <main className={`book-stage ${turn ? `turning ${turn.direction}` : ''}`}>
-        <section className="book-spread single-page-book" aria-label={isCover ? 'Book front cover' : isEnd ? 'End of book' : `Letter ${currentPage.letter} coloring page`}>
+        <section className="book-spread single-page-book" aria-label={isEnd ? 'End of book' : `${currentPage.title} coloring page`}>
           {isCover ? (
             <BookCover onOpen={goNext} />
           ) : currentPage ? (
             <PageFace
               page={currentPage}
+              rewarded={family?.child?.coloringRewards?.includes(currentPage.id)}
               side="single"
               drawingTool={drawingTool}
-              strokes={drawings[currentPage.letter] || []}
-              onStrokeComplete={(stroke) => saveStroke(currentPage.letter, stroke)}
+              strokes={drawings[currentPage.id] || []}
+              onStrokeComplete={(stroke) => saveStroke(currentPage.id, stroke)}
               onPickUpEraser={pickUpEraser}
               eraserHeld={eraserHeld}
-              onResetPage={() => resetPage(currentPage.letter)}
+              onResetPage={() => resetPage(currentPage.id)}
             />
           ) : (
-            <PageFace side="single" blank onResetColoring={() => setDrawings({})} onRestartBook={restartBook} hasColoring={hasColoring} />
+            <PageFace side="single" blank onResetColoring={() => setDrawings((current) => Object.fromEntries(Object.entries(current).filter(([id]) => !pages.some((page) => page.id === id))))} onRestartBook={restartBook} hasColoring={hasColoring} />
           )}
 
           <button
@@ -461,7 +564,18 @@ function ColoringBook({ onExit, family }) {
           </button>
         </section>
 
-        {currentPage ? (
+        {currentPage && usesPaint ? (
+          <section className="waffles-paint-tray" aria-label="Waffles and Pip paint palette">
+            <p>Your little paint box</p>
+            <h2>Pick a happy color</h2>
+            <div className="waffles-paint-colors" role="group" aria-label="Paint colors">
+              {wafflesPaints.map(([name, hex]) => (
+                <button type="button" key={hex} className="waffles-paint-well" style={{ '--paint': hex }} title={name} aria-label={name} aria-pressed={!eraserHeld && heldColor === hex} onClick={() => { setSelectedColor(hex); setHeldColor(hex); setEraserHeld(false); }} />
+              ))}
+            </div>
+            <p aria-live="polite">{eraserHeld ? 'Eraser' : wafflesPaints.find(([, hex]) => hex === selectedColor)?.[0]}</p>
+          </section>
+        ) : currentPage ? (
         <section className="toolstrip" aria-label="Color palette">
           <div className="toolstrip__copy">
             <p className="eyebrow">Crayons</p>
@@ -1736,7 +1850,7 @@ function ToddlerApp({ family }) {
   }
 
   if (route === '/coloring') {
-    return <ColoringBook family={family} onExit={() => navigate('/tunnel')} />;
+    return <ColoringBook key={family?.child?.id || 'coloring-player'} family={family} onExit={() => navigate('/tunnel')} />;
   }
 
   if (route === '/memory') {

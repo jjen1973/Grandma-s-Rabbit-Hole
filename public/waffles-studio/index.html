@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Waffles &amp; Pip's Paint Table</title><link rel="stylesheet" href="studio.css"></head>
+<body>
+<header><p class="eyebrow">WAFFLES &amp; PIP · BOOKS 1–5</p><h1>A little color. A big adventure.</h1><p>Pull up a chair at our paint table.</p></header>
+<main class="studio">
+<section class="picture" aria-label="Coloring picture">
+<div class="page-heading"><button id="previous" aria-label="Previous picture">←</button><div><p id="counter" class="eyebrow"></p><h2 id="title"></h2></div><button id="next" aria-label="Next picture">→</button></div>
+<div class="zoom-controls" role="group" aria-label="Picture zoom"><button id="zoom-out" aria-label="Zoom out">−</button><span id="zoom-level">100%</span><button id="zoom-in" aria-label="Zoom in">+</button><button id="zoom-reset">Fit picture</button></div><div class="zoom-viewport"><div class="paper"><img id="art" alt=""><canvas id="paint" width="1086" height="1448" aria-label="Draw on this picture with your finger, mouse, or pen"></canvas></div></div>
+</section>
+<aside class="supplies" aria-label="Painting supplies"><div class="tray">
+<p class="eyebrow">YOUR LITTLE PAINT BOX</p><h2>Pick a happy color</h2><p class="hint">Tap a paint. Then draw on the picture.</p>
+<div id="colors" class="colors" role="group" aria-label="Paint colors"></div>
+<div class="selected"><span id="color-dot"></span><strong id="color-name">Sky blue</strong><button id="move-page" aria-pressed="false">Move page</button></div>
+<div class="tools" role="group" aria-label="Painting mode"><button id="brush" aria-pressed="true">Brush</button><button id="fill" aria-pressed="false">Tap to fill</button></div>
+<div class="brushes" role="group" aria-label="Brush size"><button data-size="14" aria-pressed="false"><i style="--dot:8px"></i>Small</button><button data-size="36" aria-pressed="true"><i style="--dot:16px"></i>Medium</button><button data-size="72" aria-pressed="false"><i style="--dot:25px"></i>Big</button></div>
+<div class="tools"><button id="eraser" aria-pressed="false">Eraser</button><button id="undo" disabled>↶ Undo</button></div>
+<div class="tools"><button id="redo" disabled>Redo</button><button id="reset" disabled>Reset picture</button></div>
+</div><p id="status" class="save-note" role="status">Your colors stay on this device as you go.</p>
+<details><summary>Choose an adventure</summary><div id="pictures" class="thumbnails"></div></details>
+<a class="pdf-link" href="coloring-book.pdf">Print &amp; color on paper ↗</a><p class="save-note">10 blank pages · printable PDF</p>
+</aside>
+</main><script id="edition" type="application/json">{"title": "Waffles & Pip Coloring Adventures", "subtitle": "Favorite scenes from Books 1–5", "page_size": "US Letter portrait", "pages": [{"number": 1, "title": "The Very Suspicious Berry", "book": 1, "reference": "books/01-the-very-suspicious-berry/artwork/berry-warning.png", "image": "/pages/waffles-coloring/01-suspicious-berry.png"}, {"number": 2, "title": "Berry Best Friends", "book": 1, "reference": "books/01-the-very-suspicious-berry/artwork/strawberries.png", "image": "/pages/waffles-coloring/02-berry-friends.png"}, {"number": 3, "title": "The Acorn Pile", "book": 2, "reference": "books/02-the-great-acorn-emergency/artwork/acorn-pile.png", "image": "/pages/waffles-coloring/03-acorn-pile.png"}, {"number": 4, "title": "A Leaf Full of Acorns", "book": 2, "reference": "books/02-the-great-acorn-emergency/artwork/leaf-carrier.png", "image": "/pages/waffles-coloring/04-leaf-carrier.png"}, {"number": 5, "title": "Where Is the Carrot?", "book": 3, "reference": "books/03-the-missing-carrot-mystery/artwork/empty-patch.png", "image": "/pages/waffles-coloring/05-carrot-mystery.png"}, {"number": 6, "title": "We Found the Carrot!", "book": 3, "reference": "books/03-the-missing-carrot-mystery/artwork/carrot-rescue.png", "image": "/pages/waffles-coloring/06-carrot-rescue.png"}, {"number": 7, "title": "A Tiny Garden Friend", "book": 4, "reference": "books/04-investigate-the-garden/artwork/caterpillar.png", "image": "/pages/waffles-coloring/07-caterpillar.png"}, {"number": 8, "title": "Hello, Mole!", "book": 4, "reference": "books/04-investigate-the-garden/artwork/mole.png", "image": "/pages/waffles-coloring/08-mole.png"}, {"number": 9, "title": "His Name Is Charlie", "book": 5, "reference": "books/05-the-pig-who-wasnt-bacon/artwork/charlie.png", "image": "/pages/waffles-coloring/09-charlie.png"}, {"number": 10, "title": "A Day at Grandma's Farm", "book": 5, "reference": "books/05-the-pig-who-wasnt-bacon/artwork/farm.png", "image": "/pages/waffles-coloring/10-grandmas-farm.png"}]}</script><script src="studio.js"></script><script src="host.js"></script>
+</body></html>

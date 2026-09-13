@@ -1,0 +1,77 @@
+{
+  "title": "Waffles & Pip Coloring Adventures",
+  "subtitle": "Favorite scenes from Books 1–5",
+  "page_size": "US Letter portrait",
+  "pages": [
+    {
+      "number": 1,
+      "title": "The Very Suspicious Berry",
+      "book": 1,
+      "reference": "books/01-the-very-suspicious-berry/artwork/berry-warning.png",
+      "image": "/pages/waffles-coloring/01-suspicious-berry.png"
+    },
+    {
+      "number": 2,
+      "title": "Berry Best Friends",
+      "book": 1,
+      "reference": "books/01-the-very-suspicious-berry/artwork/strawberries.png",
+      "image": "/pages/waffles-coloring/02-berry-friends.png"
+    },
+    {
+      "number": 3,
+      "title": "The Acorn Pile",
+      "book": 2,
+      "reference": "books/02-the-great-acorn-emergency/artwork/acorn-pile.png",
+      "image": "/pages/waffles-coloring/03-acorn-pile.png"
+    },
+    {
+      "number": 4,
+      "title": "A Leaf Full of Acorns",
+      "book": 2,
+      "reference": "books/02-the-great-acorn-emergency/artwork/leaf-carrier.png",
+      "image": "/pages/waffles-coloring/04-leaf-carrier.png"
+    },
+    {
+      "number": 5,
+      "title": "Where Is the Carrot?",
+      "book": 3,
+      "reference": "books/03-the-missing-carrot-mystery/artwork/empty-patch.png",
+      "image": "/pages/waffles-coloring/05-carrot-mystery.png"
+    },
+    {
+      "number": 6,
+      "title": "We Found the Carrot!",
+      "book": 3,
+      "reference": "books/03-the-missing-carrot-mystery/artwork/carrot-rescue.png",
+      "image": "/pages/waffles-coloring/06-carrot-rescue.png"
+    },
+    {
+      "number": 7,
+      "title": "A Tiny Garden Friend",
+      "book": 4,
+      "reference": "books/04-investigate-the-garden/artwork/caterpillar.png",
+      "image": "/pages/waffles-coloring/07-caterpillar.png"
+    },
+    {
+      "number": 8,
+      "title": "Hello, Mole!",
+      "book": 4,
+      "reference": "books/04-investigate-the-garden/artwork/mole.png",
+      "image": "/pages/waffles-coloring/08-mole.png"
+    },
+    {
+      "number": 9,
+      "title": "His Name Is Charlie",
+      "book": 5,
+      "reference": "books/05-the-pig-who-wasnt-bacon/artwork/charlie.png",
+      "image": "/pages/waffles-coloring/09-charlie.png"
+    },
+    {
+      "number": 10,
+      "title": "A Day at Grandma's Farm",
+      "book": 5,
+      "reference": "books/05-the-pig-who-wasnt-bacon/artwork/farm.png",
+      "image": "/pages/waffles-coloring/10-grandmas-farm.png"
+    }
+  ]
+}

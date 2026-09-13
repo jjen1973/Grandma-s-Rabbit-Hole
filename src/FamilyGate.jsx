@@ -3,6 +3,7 @@ import { createUserWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEm
 import { addDoc, collection, doc, onSnapshot, orderBy, query, runTransaction, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from './firebase';
 import { Capacitor } from '@capacitor/core';
+import { coloringRewardUpdate } from './coloringRewards';
 
 // Android serves bundled HTML directly; the website uses the public rewrite.
 const privacyUrl = Capacitor.isNativePlatform() ? '/privacy.html' : '/privacy';
@@ -190,7 +191,7 @@ export default function FamilyGate({ children }) {
     }
   };
 
-  const awardColoringPage = async (letter) => {
+  const awardColoringPage = async (letter, bookId = 'abc') => {
     if (!user || !selected || !letter) return;
     const childReference = doc(db, 'parents', user.uid, 'children', selected.id);
     setRewardError('');
@@ -199,10 +200,9 @@ export default function FamilyGate({ children }) {
         const snapshot = await transaction.get(childReference);
         if (!snapshot.exists()) throw new Error('The selected child profile was not found in Firestore.');
         const data = snapshot.data();
-        const rewarded = Array.isArray(data.coloringRewards) ? data.coloringRewards : [];
-        if (rewarded.includes(letter)) return;
-        const nextRewards = [...rewarded, letter];
-        const completedBook = nextRewards.length >= 26 && !data.coloringBookGoldAwarded;
+        const reward = coloringRewardUpdate(data, letter, bookId);
+        if (!reward) return;
+        const { nextRewards, completedBook, completedBooks } = reward;
         const carrotsBefore = data.carrots || 0;
         const carrotsAfter = carrotsBefore + 1;
         const goldCarrotsBefore = data.goldCarrots || 0;
@@ -215,7 +215,8 @@ export default function FamilyGate({ children }) {
           ...(completedBook ? {
             goldCarrots: goldCarrotsAfter,
             trackedGoldCarrotsEarned: (data.trackedGoldCarrotsEarned || 0) + 1,
-            coloringBookGoldAwarded: true,
+            coloringCompletedBooks: completedBooks,
+            ...(bookId === 'abc' ? { coloringBookGoldAwarded: true } : {}),
           } : {}),
         });
         writeCurrencyTransaction(transaction, childReference, {
@@ -223,18 +224,20 @@ export default function FamilyGate({ children }) {
           currency: 'carrots',
           amount: 1,
           reason: 'coloring-page',
+          itemId: letter,
           balanceBefore: carrotsBefore,
           balanceAfter: carrotsAfter,
         });
         if (completedBook) {
           writeCurrencyTransaction(transaction, childReference, {
             type: 'earn', currency: 'goldCarrots', amount: 1, reason: 'coloring-book-complete',
+            itemId: bookId,
             balanceBefore: goldCarrotsBefore, balanceAfter: goldCarrotsAfter,
           });
         }
       });
     } catch (nextError) {
-      reportRewardError(`Letter ${letter}`, nextError);
+      reportRewardError(`Coloring page ${letter}`, nextError);
       throw nextError;
     }
   };
